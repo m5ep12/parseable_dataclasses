@@ -1,2 +1,1 @@
-def hello() -> str:
-    return "Hello from parseable-dataclasses!"
+from .mixin import ParsearbleDataClassMixin
