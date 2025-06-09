@@ -1,5 +1,6 @@
 """ parseable-dataclasses
     Examples:
+        ```python
         @parseable_dataclass
         @dataclass
         class DC:
@@ -14,11 +15,13 @@
         # dc(a=1, b="hello", opt=2.71828)
     
         # or
+
         @parseable_dataclass
         class DC:
             a: int
             b: str
             opt: float = 3.141592
+        ```
 """
 from abc import ABC
 from dataclasses import MISSING, dataclass, fields, Field, is_dataclass
@@ -35,27 +38,6 @@ def parseable_dataclass(cls: type):
 
     Returns:
         cls (type): an parseable_dataclass
-    
-    Examples:
-        @parseable_dataclass
-        @dataclass
-        class DC:
-            a: int
-            b: str
-            opt: float = 3.141592
-        
-        assert, hasatter(DC, "parse_args")
-        dc = DC.parse_args(["1 hello"].split())
-        # dc(a=1, b="hello", opt=3.141592)
-        dc = DC.parse_args(["1 hello 2.71828"].split())
-        # dc(a=1, b="hello", opt=2.71828)
-    
-        # or
-        @parseable_dataclass
-        class DC:
-            a: int
-            b: str
-            opt: float = 3.141592
     """
     if issubclass(cls, ParseableDataClassMixin):
         return cls
@@ -100,9 +82,9 @@ class ParseableDataClassMixin(ABC):
             kw_args["prog"] = cls.__name__
         parser = ArgumentParser(*args, **kw_args)
         for field in fields(cls):
-            name = field.name if is_positional(field) else "--" + field.name
-            default = field.name if is_positional(field) else "--" + field.name
-            if is_positional(field):
+            name = field.name if __is_positional(field) else "--" + field.name
+            default = field.name if __is_positional(field) else "--" + field.name
+            if __is_positional(field):
                 name = field.name
                 default = None
             else:
@@ -158,7 +140,7 @@ class ParseableDataClassMixin(ABC):
         return parser
 
 
-def is_positional(field: Field) -> bool:
+def __is_positional(field: Field) -> bool:
     """return True if input is a positional field
 
     Args:
@@ -169,7 +151,7 @@ def is_positional(field: Field) -> bool:
     """
     return field.default is MISSING and field.default_factory is MISSING
 
-def is_optional(field: Field) -> bool:
+def __is_optional(field: Field) -> bool:
     """return True if input is a optional field
 
     Args:
@@ -178,4 +160,4 @@ def is_optional(field: Field) -> bool:
     Returns:
         bool: True/False
     """
-    return not is_positional(field)
+    return not __is_positional(field)
