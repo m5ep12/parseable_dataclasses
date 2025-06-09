@@ -55,11 +55,11 @@ class DC:
 
 assert, hasatter(DC, &quot;parse_args&quot;)
 dc = DC.parse_args([&quot;1 hello&quot;].split())
--&gt; dc(a=1, b=&quot;hello&quot;, opt=3.141592)
+# dc(a=1, b=&quot;hello&quot;, opt=3.141592)
 dc = DC.parse_args([&quot;1 hello 2.71828&quot;].split())
--&gt; dc(a=1, b=&quot;hello&quot;, opt=2.71828)
+# dc(a=1, b=&quot;hello&quot;, opt=2.71828)
 
-or
+# or
 
 @parseable_dataclass
 class DC:
@@ -91,7 +91,6 @@ class DC:
 
     Returns:
         cls (type): an parseable_dataclass
-
     &#34;&#34;&#34;
     if issubclass(cls, ParseableDataClassMixin):
         return cls
@@ -156,11 +155,13 @@ class DC:
         assert is_dataclass(cls), f&#34;This mixin must be inherited to a dataclass, but {cls=} is not in dataclasses.&#34;
         if len(args) == 0 and &#34;prog&#34; not in kw_args:
             kw_args[&#34;prog&#34;] = cls.__name__
+        if &#34;formatter_class&#34; not in kw_args:
+            kw_args[&#34;formatter_class&#34;] = ArgumentDefaultsHelpFormatter
         parser = ArgumentParser(*args, **kw_args)
         for field in fields(cls):
-            name = field.name if __is_positional(field) else &#34;--&#34; + field.name
-            default = field.name if __is_positional(field) else &#34;--&#34; + field.name
-            if __is_positional(field):
+            name = field.name if _is_positional(field) else &#34;--&#34; + field.name
+            default = field.name if _is_positional(field) else &#34;--&#34; + field.name
+            if _is_positional(field):
                 name = field.name
                 default = None
             else:
@@ -178,7 +179,7 @@ class DC:
                     parser.add_argument(name, default=default, type=t, help=text)
                 case type() as t if t == bool:
                     # p: bool
-                    text = f&#34;default is {default if default else False}&#34;
+                    text = t.__name__
                     parser.add_argument(name, default=default, action=BooleanOptionalAction, help=text)
                 case type() as t if t == list:
                     # p: list

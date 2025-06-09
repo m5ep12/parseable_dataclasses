@@ -1,1 +1,1 @@
-from .mixin import ParseableDataClassMixin
+from .mixin import ParseableDataClassMixin, parseable_dataclass
