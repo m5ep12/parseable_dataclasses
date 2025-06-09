@@ -10,6 +10,12 @@ dependencies = []
 [project.url]
 Source = "https://github.com/m5ep12/parseable_dataclasses.git"
 
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]
+testpaths = "tests"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
